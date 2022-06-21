@@ -1,6 +1,7 @@
 go 1.18
 
 use (
+	./internal/config
 	./internal/game
 	./pkg/alinv
 )
