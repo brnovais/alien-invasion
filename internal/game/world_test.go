@@ -19,11 +19,11 @@ func TestWorldLoad(t *testing.T) {
 		t.Error("Failed to load all nodes")
 	}
 
-	if len(world.cities["Foo"].roads) != 3 {
+	if len(world.GetCityByName("Foo").roads) != 3 {
 		t.Error("Failed to load all edges to Foo")
 	}
 
-	if len(world.cities["Bar"].roads) != 2 {
+	if len(world.GetCityByName("Bar").roads) != 2 {
 		t.Error("Failed to load all edges to Bar")
 	}
 }

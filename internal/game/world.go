@@ -9,15 +9,21 @@ import (
 
 // Non-existent world of X.
 type World struct {
-	// Cities is a private map of city names and its data.
-	// Its a graph like structure similar to an adjacency list.
-	cities map[string]*City
+	// Cities is a private adjacency list of cities representing a graph
+	// like structure, where city is the node and roads the edges.
+	cities []*City
+
+	// Indexed values to search for cities faster based on its name.
+	index map[string]int
 }
 
 // Initialize the world and all required data structures.
 func (w *World) Initialize() {
 	// Allocate memory to store the cities.
-	w.cities = make(map[string]*City)
+	w.cities = make([]*City, 0)
+
+	// Allocate memory to store the city name index.
+	w.index = make(map[string]int)
 }
 
 func (w *World) Read(filePath string) {
@@ -28,6 +34,7 @@ func (w *World) Read(filePath string) {
 	}
 	defer file.Close()
 
+	// Load the world map from file to memory.
 	w.load(file)
 }
 
@@ -49,16 +56,16 @@ func (w *World) load(reader io.Reader) {
 		// The city name is first.
 		cityName := s[0]
 
-		_, exist := w.cities[cityName]
+		// If the city is not in the index, it means the city needs
+		// to be added to the graph before using it.
+		cityIndex, exist := w.index[cityName]
 		if !exist {
-			w.cities[cityName] = &City{
-				name:  cityName,
-				roads: make([]*Road, 0),
-				print: true,
-			}
-		} else {
-			w.cities[cityName].print = true
+			// Add a new city to the graph.
+			cityIndex = w.AddCity(cityName)
 		}
+
+		// If the city was added from a file, prioritize it to be prited.
+		w.GetCity(cityIndex).Print(true)
 
 		// Loop through the roads in/out of the city.
 		for i := 1; i < len(s); i++ {
@@ -70,27 +77,19 @@ func (w *World) load(reader io.Reader) {
 			roadName := dir[0]
 			destName := dir[1]
 
-			_, exist := w.cities[destName]
+			// If the city is not in the index, it means the city needs
+			// to be added to the graph before using it.
+			destIndex, exist := w.index[destName]
 			if !exist {
-				dest := &City{
-					name:  destName,
-					roads: make([]*Road, 1),
-				}
+				// Add a new city to the graph.
+				destIndex = w.AddCity(destName)
 
-				dest.roads[0] = &Road{
-					name: "",
-					dest: w.cities[cityName],
-				}
-
-				w.cities[destName] = dest
-
-				w.cities[cityName].roads = append(w.cities[cityName].roads, &Road{
-					name: roadName,
-					dest: dest,
-				})
+				// And create an edge between these cities.
+				w.Connect(roadName, cityIndex, destIndex)
 			} else {
-				for _, r := range w.cities[cityName].roads {
-					if r.dest == w.cities[destName] {
+				//w.GetCity(cityIndex).GetRoad(destIndex).SetName(roadName)
+				for _, r := range w.cities[cityIndex].roads {
+					if r.dest == w.cities[destIndex] {
 						r.name = roadName
 						break
 					}
@@ -105,11 +104,13 @@ func (w *World) Print() string {
 	// Use a string buffer to optmize string processing.
 	var sb strings.Builder
 
-	for k, v := range w.cities {
-		// Verify if this is a city added directly to the map or it's just an edge.
-		if v.print {
+	for _, v := range w.cities {
+		isolated := len(v.roads) == 0
 
-			sb.WriteString(k)
+		// Verify if this is a city added directly to the map or it's just an edge.
+		if !v.destroyed && (v.print || isolated) {
+			sb.WriteString(v.name)
+
 			for _, r := range v.roads {
 				if r.name != "" {
 					sb.WriteString(" ")
@@ -118,6 +119,7 @@ func (w *World) Print() string {
 					sb.WriteString(r.dest.name)
 				}
 			}
+
 			sb.WriteString("\n")
 		}
 	}
@@ -125,26 +127,51 @@ func (w *World) Print() string {
 	return sb.String()
 }
 
-// City is a node in our graph. Its the main object
-// in the non-existent world of X.
-type City struct {
-	// Name of this node, used as a key to identify the city.
-	name string
+// Add a new node to the graph and create a index based on its name.
+func (w *World) AddCity(cityName string) int {
+	// Use the length as the last index.
+	cityIndex := len(w.cities)
 
-	// Edges of this node, connecting nodes.
-	roads []*Road
+	// Append the city, making the list larger and a valid cityIndex.
+	w.cities = append(w.cities, &City{
+		name:  cityName,
+		roads: make([]*Road, 0),
+		print: false,
+	})
 
-	// Cached value indicating if we need to print this city.
-	print bool
+	// Set the city in our index.
+	w.index[cityName] = cityIndex
+
+	// Return the newly created index.
+	return cityIndex
 }
 
-// Road is an edge in our graph, creating connections between cities.
-type Road struct {
-	// Name of the road, used right now to store the direction.
-	// The main utility for this field is to explore the idead
-	// of multiple paths going to the same city.
-	name string
+// Get the city based on its identifier.
+func (w *World) GetCity(index int) *City {
+	return w.cities[index]
+}
 
-	// The destination node (city) of this road.
-	dest *City
+// Get the city based on its name. It uses an index for fast lookup.
+func (w *World) GetCityByName(name string) *City {
+	return w.cities[w.index[name]]
+}
+
+// Connect two cities creating an edge between nodes.
+func (w *World) Connect(roadName string, city1, city2 int) {
+	// Append the road to the first city.
+	w.cities[city1].roads = append(w.cities[city1].roads, &Road{
+		name: roadName,
+		dest: w.cities[city2],
+	})
+
+	// Append the road to the second city.
+	w.cities[city2].roads = append(w.cities[city2].roads, &Road{
+		name: "",
+		dest: w.cities[city1],
+	})
+}
+
+// Get the amount of cities (nodes) we have on our world.
+func (w *World) Size() int {
+	return len(w.cities)
 }

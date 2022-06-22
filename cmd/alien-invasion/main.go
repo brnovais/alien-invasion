@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/brnovais/alien-invasion/alinv"
 )
 
@@ -13,7 +15,7 @@ func main() {
 	)
 
 	// Initialize the game and all required data structures.
-	game.Initialize()
+	game.Initialize(time.Now().UTC().UnixNano())
 	// Run the alien invasion simulation.
 	game.Run()
 	// Print the results of the simulation.
