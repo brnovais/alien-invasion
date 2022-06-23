@@ -148,8 +148,6 @@ func (g *Game) move() int {
 				}
 
 				alien.city.aliens++
-
-				break
 			}
 
 			count++
