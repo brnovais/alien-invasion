@@ -29,7 +29,7 @@ type CommandLineConfigReader struct {
 // Read configuration from command-line options.
 func (r CommandLineConfigReader) Read() Config {
 	aliens := flag.Int("n", 0, "# of aliens")
-	iterations := flag.Int("i", 1, "# of iterations")
+	iterations := flag.Int("i", 10_000, "# of iterations")
 	file := flag.String("file", "testdata/data.txt", "")
 
 	flag.Parse()

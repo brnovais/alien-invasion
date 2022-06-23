@@ -1,5 +1,42 @@
 # Alien Invasion
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/cdc0a301c2bef60829fd/maintainability)](https://codeclimate.com/github/brnovais/alien-invasion/maintainability)
+
+Mad aliens invasion simulator! This is a for fun project used to explore my
+abilities as a Golang developer.
+
+## How to use
+
+You need to have [Go](https://go.dev/doc/install) installed to run this code.
+
+### Running
+
+To run the simulation, you can run the following command:
+
+`go run cmd/alien-invasion/main.go`
+
+The following command line options are available:
+
+- n: number of aliens to simulate the invasion
+- i: number of iterations the simulation will run
+- file: data with cities and its roads
+
+Example:
+
+The following command will run the simulation with 5 aliens for no more than
+10 iterations. The world is loaded from file _testdata/data.txt_.
+
+`go run cmd/alien-invasion/main.go -n 5 -i 10 -file testdata/data.txt`
+
+### Compiling
+
+Compiling the code is not mandatory, but you can use go build to generate
+an executable to run in your platform.
+
+`go build cmd/alien-invasion/main.go`
+
+## Task description
+
 Mad aliens are about to invade the earth and you are tasked with simulating the
 invasion.
 
