@@ -7,6 +7,7 @@ import (
 	"github.com/brnovais/alien-invasion/internal/config"
 )
 
+// Game represents the configuration and data used to simulate the alien invasion.
 type Game struct {
 	// Configuration for this game instance.
 	config config.Config
@@ -22,7 +23,7 @@ type Game struct {
 }
 
 // Configure the game based on the configuration reader.
-func (g *Game) Configure(reader config.ConfigReader) {
+func (g *Game) Configure(reader config.Reader) {
 	// Read the whole configuration and store it.
 	g.config = reader.Read()
 }
@@ -46,7 +47,7 @@ func (g *Game) Initialize(seed int64) {
 func (g *Game) Run() {
 	// The program should run until all the aliens have been
 	// destroyed, or each alien has moved at least 10,000 times.
-	for i := 0; i < int(g.config.Iterations); i++ {
+	for i := 0; i < g.config.Iterations; i++ {
 		g.fight()
 
 		// Check if we have enough aliens to fight.

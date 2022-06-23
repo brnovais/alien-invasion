@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Non-existent world of X.
+// World is the main graph represeting the non-existent world of X.
 type World struct {
 	// Cities is a private adjacency list of cities representing a graph
 	// like structure, where city is the node and roads the edges.
@@ -127,7 +127,7 @@ func (w *World) Print() string {
 	return sb.String()
 }
 
-// Add a new node to the graph and create a index based on its name.
+// AddCity is responsible to add a new node to the graph and create a index based on its name.
 func (w *World) AddCity(cityName string) int {
 	// Use the length as the last index.
 	cityIndex := len(w.cities)
@@ -146,12 +146,12 @@ func (w *World) AddCity(cityName string) int {
 	return cityIndex
 }
 
-// Get the city based on its identifier.
+// GetCity is responsible to get the city based on its identifier.
 func (w *World) GetCity(index int) *City {
 	return w.cities[index]
 }
 
-// Get the city based on its name. It uses an index for fast lookup.
+// GetCityByName is responsible to get the city based on its name. It uses an index for fast lookup.
 func (w *World) GetCityByName(name string) *City {
 	return w.cities[w.index[name]]
 }
@@ -171,7 +171,7 @@ func (w *World) Connect(roadName string, city1, city2 int) {
 	})
 }
 
-// Get the amount of cities (nodes) we have on our world.
+// Size returns the amount of cities (nodes) we have on our world.
 func (w *World) Size() int {
 	return len(w.cities)
 }

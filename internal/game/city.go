@@ -19,18 +19,22 @@ type City struct {
 	destroyed bool
 }
 
+// Print indicates if the city should be printed at the end.
 func (c *City) Print(print bool) {
 	c.print = print
 }
 
+// IsDestroyed indicates if this city was exploded by two or more aliens fighting.
 func (c *City) IsDestroyed() bool {
 	return c.destroyed
 }
 
+// Destroy this city and store internally the new state.
 func (c *City) Destroy() {
 	c.destroyed = true
 }
 
+// DelRoad removes all edges of this city from connected roads.
 func (c *City) DelRoad(dest *City) {
 	l := len(c.roads)
 

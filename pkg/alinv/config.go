@@ -4,23 +4,28 @@ import (
 	"github.com/brnovais/alien-invasion/internal/config"
 )
 
+// ConfigReaderEnum represents available configuration readers.
 // We need a single byte to represent all available options.
+// Since this is a simulation, some values will not be implemented.
 type ConfigReaderEnum byte
 
 const (
-	// Read configuration from command-line arguments.
+	// CommandLineConfigReader is used to read
+	// configuration from command-line arguments.
 	CommandLineConfigReader ConfigReaderEnum = iota
 
-	// Read configuration from environment variables.
+	// EnvironmentConfigReader will be used to read
+	// configuration from environment variables.
 	EnvironmentConfigReader
 
-	// Read configuration from files.
+	// FileConfigReader will be used to read configuration from files.
 	FileConfigReader
 )
 
-// Create a new configuration reader based on the type supplied as an argument.
-// For now, only CommandLineConfigReader is implemented.
-func NewConfigReader(cfgType ConfigReaderEnum) config.ConfigReader {
+// NewConfigReader creates a new configuration reader based on the type supplied
+// as an argument. Since this is a simulation, only CommandLineConfigReader
+// will be implemented.
+func NewConfigReader(cfgType ConfigReaderEnum) config.Reader {
 	switch cfgType {
 	case CommandLineConfigReader:
 		return config.CommandLineConfigReader{}
